@@ -12,14 +12,26 @@
 //    5. firebaseConfig 객체 전체를 아래에 붙여넣기
 // ============================================================
 
+// const firebaseConfig = {
+//  apiKey:            "YOUR_API_KEY",
+//  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
+//  projectId:         "YOUR_PROJECT_ID",
+//  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
+//  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+//  appId:             "YOUR_APP_ID"
+// };
+
+
 const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey: "AIzaSyA8MxGh_wuZ6S9rL7v5OXHUvQAGmY6DRIQ",
+  authDomain: "edu-a5172.firebaseapp.com",
+  projectId: "edu-a5172",
+  storageBucket: "edu-a5172.firebasestorage.app",
+  messagingSenderId: "451200816453",
+  appId: "1:451200816453:web:e67720c0c4e044dabf9a2c",
+  measurementId: "G-QJ4877QK85"
 };
+
 
 // Firebase 초기화
 firebase.initializeApp(firebaseConfig);
