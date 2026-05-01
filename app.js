@@ -359,7 +359,6 @@ function renderCards() {
 
 // Firestore에 order/url 없으면 DEFAULT_EDUS 제목으로 찾아서 반환
 function getOrderNum(edu) {
-  if (edu.order) return edu.order;
   const def = DEFAULT_EDUS.find(d => d.title === edu.title);
   return def ? def.order : 999;
 }
