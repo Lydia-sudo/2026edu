@@ -41,26 +41,29 @@ const toastEl       = $('toast');
 
 // ─── 필수 교육 기본 목록 ───────────────────────────────────
 const DEFAULT_EDUS = [
-  { title: '성인지 원격교육',       description: '',  dueDate: '2026-12-31' },
-  { title: '장애인식 개선교육',      description: '',  dueDate: '2026-12-31' },
-  { title: '자살예방교육 (전반기)',   description: '',  dueDate: '2026-06-30' },
-  { title: '자살예방교육 (후반기)',   description: '',  dueDate: '2026-12-31' },
-  { title: '인권 교육',             description: '',  dueDate: '2026-12-31' },
-  { title: '아동학대 예방교육',      description: '',  dueDate: '2026-12-31' },
-  { title: '다문화 이해교육',        description: '',  dueDate: '2026-12-31' },
-  { title: '청렴교육',              description: '',  dueDate: '2026-12-31' },
-  { title: 'e-러닝 안전교육',        description: '',  dueDate: '2026-12-31' },
+  { order: 1,  title: '성인지 원격교육',       description: '', dueDate: '2026-12-31' },
+  { order: 2,  title: '장애인식 개선교육',      description: '', dueDate: '2026-12-31' },
+  { order: 3,  title: '자살예방교육 (전반기)',   description: '', dueDate: '2026-06-30' },
+  { order: 4,  title: '자살예방교육 (후반기)',   description: '', dueDate: '2026-12-31' },
+  { order: 5,  title: '인권 교육',             description: '', dueDate: '2026-12-31' },
+  { order: 6,  title: '아동학대 예방교육',      description: '', dueDate: '2026-12-31' },
+  { order: 7,  title: '다문화 이해교육',        description: '', dueDate: '2026-12-31' },
+  { order: 8,  title: '청렴교육',              description: '', dueDate: '2026-12-31' },
+  { order: 9,  title: 'e-러닝 안전교육',        description: '', dueDate: '2026-12-31' },
+  { order: 10, title: '헌법수호교육',           description: '', dueDate: '2026-12-31' },
 ];
 
-// 교육 목록이 비어있으면 기본 9개 자동 생성
+// 누락된 필수 교육 항목만 골라서 추가 (기존 데이터 유지)
 async function seedDefaultEdus() {
   const col   = db.collection('users').doc(uid).collection('educations');
-  const snap  = await col.limit(1).get();
-  if (!snap.empty) return; // 이미 교육이 있으면 건너뜀
+  const snap  = await col.get();
+  const existing = new Set(snap.docs.map(d => d.data().title));
+  const missing  = DEFAULT_EDUS.filter(e => !existing.has(e.title));
+  if (missing.length === 0) return;
 
   const batch = db.batch();
   const ts    = firebase.firestore.FieldValue.serverTimestamp();
-  DEFAULT_EDUS.forEach(edu => {
+  missing.forEach(edu => {
     batch.set(col.doc(), { ...edu, completed: false, createdAt: ts, updatedAt: ts });
   });
   await batch.commit();
@@ -321,9 +324,11 @@ function renderCards() {
   if (curFilter === 'overdue') list = list.filter(e => getStatus(e) === 'overdue');
   if (curFilter === 'soon')    list = list.filter(e => getStatus(e) === 'soon');
 
-  // 정렬: 미완료 → 완료, 마감일 오름차순
+  // 정렬: 미완료 → 완료, order 번호 → 마감일 오름차순
   list.sort((a, b) => {
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    const oa = a.order ?? 999, ob = b.order ?? 999;
+    if (oa !== ob) return oa - ob;
     return (a.dueDate || '').localeCompare(b.dueDate || '');
   });
 
@@ -350,7 +355,7 @@ function renderCard(edu) {
              onchange="toggleComplete('${esc(edu.id)}', ${edu.completed})"
              aria-label="${esc(edu.title)} 이수 완료 체크">
       <div class="card-body">
-        <div class="card-title">${esc(edu.title)}</div>
+        <div class="card-title">${edu.order ? `<span class="card-num">${edu.order}.</span> ` : ''}${esc(edu.title)}</div>
         ${edu.description
           ? `<div class="card-desc">${esc(edu.description)}</div>`
           : ''}
