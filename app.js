@@ -52,11 +52,15 @@ const DEFAULT_EDUS = [
   { title: 'e-러닝 안전교육',        description: '',  dueDate: '2026-12-31' },
 ];
 
-// 신규 사용자에게 기본 교육 목록 자동 생성 (최초 1회)
+// 신규 사용자 또는 교육 목록이 비어있는 경우 기본 목록 자동 생성
 async function seedDefaultEdus() {
-  const userDoc = db.collection('users').doc(uid);
-  const snap    = await userDoc.get();
-  if (snap.exists && snap.data().initialized) return;
+  const userDoc  = db.collection('users').doc(uid);
+  const snap     = await userDoc.get();
+  const eduSnap  = await userDoc.collection('educations').limit(1).get();
+  const isEmpty  = eduSnap.empty;
+
+  // 이미 초기화됐고 교육이 1개 이상 있으면 건너뜀
+  if (snap.exists && snap.data().initialized && !isEmpty) return;
 
   const batch = db.batch();
   const col   = userDoc.collection('educations');
