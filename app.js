@@ -39,8 +39,38 @@ const fDone         = $('fDone');
 const formError     = $('formError');
 const toastEl       = $('toast');
 
+// ─── 필수 교육 기본 목록 ───────────────────────────────────
+const DEFAULT_EDUS = [
+  { title: '성인지 원격교육',       description: '',  dueDate: '2026-12-31' },
+  { title: '장애인식 개선교육',      description: '',  dueDate: '2026-12-31' },
+  { title: '자살예방교육 (전반기)',   description: '',  dueDate: '2026-06-30' },
+  { title: '자살예방교육 (후반기)',   description: '',  dueDate: '2026-12-31' },
+  { title: '인권 교육',             description: '',  dueDate: '2026-12-31' },
+  { title: '아동학대 예방교육',      description: '',  dueDate: '2026-12-31' },
+  { title: '다문화 이해교육',        description: '',  dueDate: '2026-12-31' },
+  { title: '청렴교육',              description: '',  dueDate: '2026-12-31' },
+  { title: 'e-러닝 안전교육',        description: '',  dueDate: '2026-12-31' },
+];
+
+// 신규 사용자에게 기본 교육 목록 자동 생성 (최초 1회)
+async function seedDefaultEdus() {
+  const userDoc = db.collection('users').doc(uid);
+  const snap    = await userDoc.get();
+  if (snap.exists && snap.data().initialized) return;
+
+  const batch = db.batch();
+  const col   = userDoc.collection('educations');
+  const ts    = firebase.firestore.FieldValue.serverTimestamp();
+
+  DEFAULT_EDUS.forEach(edu => {
+    batch.set(col.doc(), { ...edu, completed: false, createdAt: ts, updatedAt: ts });
+  });
+  batch.set(userDoc, { initialized: true }, { merge: true });
+  await batch.commit();
+}
+
 // ─── 인증 상태 감지 ────────────────────────────────────────
-auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged(async user => {
   loadingScreen.classList.add('hidden');
 
   if (user) {
@@ -51,6 +81,7 @@ auth.onAuthStateChanged(user => {
 
     loginScreen.classList.add('hidden');
     appScreen.classList.remove('hidden');
+    await seedDefaultEdus();
     subscribeEdus();
   } else {
     uid = null;
