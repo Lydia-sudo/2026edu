@@ -53,20 +53,35 @@ const DEFAULT_EDUS = [
   { order: 10, title: '헌법수호교육',           description: '', dueDate: '2026-12-31' },
 ];
 
-// 누락된 필수 교육 항목만 골라서 추가 (기존 데이터 유지)
+// 누락된 항목 추가 + 기존 항목에 order 필드 없으면 업데이트
 async function seedDefaultEdus() {
-  const col   = db.collection('users').doc(uid).collection('educations');
-  const snap  = await col.get();
-  const existing = new Set(snap.docs.map(d => d.data().title));
-  const missing  = DEFAULT_EDUS.filter(e => !existing.has(e.title));
-  if (missing.length === 0) return;
+  const col      = db.collection('users').doc(uid).collection('educations');
+  const snap     = await col.get();
+  const existing = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const existingTitles = new Set(existing.map(d => d.title));
 
   const batch = db.batch();
   const ts    = firebase.firestore.FieldValue.serverTimestamp();
-  missing.forEach(edu => {
-    batch.set(col.doc(), { ...edu, completed: false, createdAt: ts, updatedAt: ts });
+  let changed = false;
+
+  // 누락된 필수 교육 추가
+  DEFAULT_EDUS.forEach(edu => {
+    if (!existingTitles.has(edu.title)) {
+      batch.set(col.doc(), { ...edu, completed: false, createdAt: ts, updatedAt: ts });
+      changed = true;
+    }
   });
-  await batch.commit();
+
+  // 기존 항목에 order 필드가 없으면 채워넣기
+  existing.forEach(item => {
+    const def = DEFAULT_EDUS.find(d => d.title === item.title);
+    if (def && item.order === undefined) {
+      batch.update(col.doc(item.id), { order: def.order });
+      changed = true;
+    }
+  });
+
+  if (changed) await batch.commit();
 }
 
 // ─── 인증 상태 감지 ────────────────────────────────────────
