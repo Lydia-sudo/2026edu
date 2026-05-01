@@ -41,16 +41,16 @@ const toastEl       = $('toast');
 
 // ─── 필수 교육 기본 목록 ───────────────────────────────────
 const DEFAULT_EDUS = [
-  { order: 1,  title: '성인지 원격교육',       description: '', dueDate: '2026-12-31' },
-  { order: 2,  title: '장애인식 개선교육',      description: '', dueDate: '2026-12-31' },
-  { order: 3,  title: '자살예방교육 (전반기)',   description: '', dueDate: '2026-06-30' },
-  { order: 4,  title: '자살예방교육 (후반기)',   description: '', dueDate: '2026-12-31' },
-  { order: 5,  title: '인권 교육',             description: '', dueDate: '2026-12-31' },
-  { order: 6,  title: '아동학대 예방교육',      description: '', dueDate: '2026-12-31' },
-  { order: 7,  title: '다문화 이해교육',        description: '', dueDate: '2026-12-31' },
-  { order: 8,  title: '청렴교육',              description: '', dueDate: '2026-12-31' },
-  { order: 9,  title: 'e-러닝 안전교육',        description: '', dueDate: '2026-12-31' },
-  { order: 10, title: '헌법수호교육',           description: '', dueDate: '2026-12-31' },
+  { order: 1,  title: '성인지 원격교육',       description: '', dueDate: '2026-12-31', url: 'https://mnd.nhi.go.kr/home/main/newHomeMain.do' },
+  { order: 2,  title: '장애인식 개선교육',      description: '', dueDate: '2026-12-31', url: 'https://mnd.nhi.go.kr/home/main/newHomeMain.do' },
+  { order: 3,  title: '자살예방교육 (전반기)',   description: '', dueDate: '2026-06-30', url: 'https://mnd.nhi.go.kr/home/main/newHomeMain.do' },
+  { order: 4,  title: '자살예방교육 (후반기)',   description: '', dueDate: '2026-12-31', url: 'https://mnd.nhi.go.kr/home/main/newHomeMain.do' },
+  { order: 5,  title: '인권 교육',             description: '', dueDate: '2026-12-31', url: 'https://mnd.nhi.go.kr/home/main/newHomeMain.do' },
+  { order: 6,  title: '아동학대 예방교육',      description: '', dueDate: '2026-12-31', url: 'https://mnd.nhi.go.kr/home/main/newHomeMain.do' },
+  { order: 7,  title: '다문화 이해교육',        description: '', dueDate: '2026-12-31', url: 'https://mnd.nhi.go.kr/home/main/newHomeMain.do' },
+  { order: 8,  title: '헌법수호교육',           description: '', dueDate: '2026-12-31', url: 'https://mnd.nhi.go.kr/home/main/newHomeMain.do' },
+  { order: 9,  title: 'e-러닝 안전교육',        description: '', dueDate: '2026-12-31', url: 'https://safety.step.or.kr/main.do' },
+  { order: 10, title: '청렴교육',              description: '', dueDate: '2026-12-31', url: 'https://acti.nhi.go.kr/' },
 ];
 
 // 누락된 항목 추가 + 기존 항목에 order 필드 없으면 업데이트
@@ -357,11 +357,17 @@ function renderCards() {
   cardContainer.innerHTML = list.map(renderCard).join('');
 }
 
-// Firestore에 order 없으면 DEFAULT_EDUS 제목으로 찾아서 반환
+// Firestore에 order/url 없으면 DEFAULT_EDUS 제목으로 찾아서 반환
 function getOrderNum(edu) {
   if (edu.order) return edu.order;
   const def = DEFAULT_EDUS.find(d => d.title === edu.title);
   return def ? def.order : 999;
+}
+
+function getUrl(edu) {
+  if (edu.url) return edu.url;
+  const def = DEFAULT_EDUS.find(d => d.title === edu.title);
+  return def ? def.url : null;
 }
 
 function renderCard(edu) {
@@ -369,6 +375,8 @@ function renderCard(edu) {
   const dueText   = formatDate(edu.dueDate);
   const countdown = getDueBadge(status, edu.dueDate);
   const badgeCls  = { done: 'done', overdue: 'overdue', soon: 'soon', normal: '' }[status] || '';
+  const orderNum  = getOrderNum(edu);
+  const url       = getUrl(edu);
 
   return `
     <div class="edu-card status-${esc(status)}" role="listitem">
@@ -377,14 +385,13 @@ function renderCard(edu) {
              onchange="toggleComplete('${esc(edu.id)}', ${edu.completed})"
              aria-label="${esc(edu.title)} 이수 완료 체크">
       <div class="card-body">
-        <div class="card-title">${getOrderNum(edu) < 999 ? `<span class="card-num">${getOrderNum(edu)}.</span> ` : ''}${esc(edu.title)}</div>
-        ${edu.description
-          ? `<div class="card-desc">${esc(edu.description)}</div>`
-          : ''}
+        <div class="card-title">${orderNum < 999 ? `<span class="card-num">${orderNum}.</span> ` : ''}${esc(edu.title)}</div>
+        ${edu.description ? `<div class="card-desc">${esc(edu.description)}</div>` : ''}
         <div class="card-meta">
           <span class="due-badge ${badgeCls}">
             📅 ${dueText}${countdown ? ' ' + countdown : ''}
           </span>
+          ${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer" class="link-badge">🔗 교육 바로가기</a>` : ''}
         </div>
       </div>
       <div class="card-actions">

@@ -507,6 +507,21 @@ main {
 .due-badge.done    { background: var(--green-pale);   color: var(--green); }
 .due-badge.today   { background: var(--orange-pale);  color: var(--orange); }
 
+.link-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--blue-pale);
+  color: var(--blue);
+  text-decoration: none;
+  transition: background .15s;
+}
+.link-badge:hover { background: #dbeafe; }
+
 /* 카드 액션 버튼 */
 .card-actions {
   display: flex;
