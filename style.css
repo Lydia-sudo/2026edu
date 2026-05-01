@@ -440,10 +440,12 @@ main {
 }
 .edu-card:hover  { box-shadow: var(--shadow-md); transform: translateY(-1px); }
 
-.edu-card.status-done    { border-left-color: var(--green); }
-.edu-card.status-overdue { border-left-color: var(--red); }
-.edu-card.status-soon    { border-left-color: var(--orange); }
-.edu-card.status-normal  { border-left-color: var(--blue); }
+.edu-card.status-done     { border-left-color: var(--green); }
+.edu-card.status-overdue  { border-left-color: var(--red); }
+.edu-card.status-soon     { border-left-color: var(--orange); }
+.edu-card.status-normal   { border-left-color: var(--blue); }
+.edu-card.status-waiting  { border-left-color: var(--gray-300); }
+.edu-card.status-enrolled { border-left-color: #7c3aed; }
 
 /* 완료된 카드는 살짝 어둡게 */
 .edu-card.status-done { opacity: .75; }
@@ -521,6 +523,31 @@ main {
   transition: background .15s;
 }
 .link-badge:hover { background: #dbeafe; }
+
+.enroll-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid var(--gray-300);
+  background: var(--white);
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+}
+.enroll-btn:hover { border-color: #7c3aed; color: #7c3aed; }
+.enroll-btn.on { background: #ede9fe; border-color: #7c3aed; color: #7c3aed; }
+
+/* 모달 날짜 2열 */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
 
 /* 카드 액션 버튼 */
 .card-actions {

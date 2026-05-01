@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>군 교육 이수 관리 시스템</title>
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
   <!-- Firebase SDK (compat v10) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -157,13 +157,23 @@
           <label for="fDesc">설명 <span class="opt">(선택)</span></label>
           <textarea id="fDesc" placeholder="교육 내용이나 메모를 입력하세요" rows="3" maxlength="500"></textarea>
         </div>
-        <div class="field">
-          <label for="fDue">마감일 <span class="req" aria-label="필수">*</span></label>
-          <input type="date" id="fDue" required>
+        <div class="field-row">
+          <div class="field">
+            <label for="fStart">수강 시작일 <span class="opt">(선택)</span></label>
+            <input type="date" id="fStart">
+          </div>
+          <div class="field">
+            <label for="fDue">마감일 <span class="req" aria-label="필수">*</span></label>
+            <input type="date" id="fDue" required>
+          </div>
+        </div>
+        <div class="field-check">
+          <input type="checkbox" id="fEnrolled">
+          <label for="fEnrolled">수강 신청 완료</label>
         </div>
         <div class="field-check">
           <input type="checkbox" id="fDone">
-          <label for="fDone">이수 완료로 표시</label>
+          <label for="fDone">이수 완료</label>
         </div>
         <div class="field-error hidden" id="formError"></div>
         <div class="modal-actions">
@@ -177,7 +187,7 @@
   <!-- ===================== 토스트 알림 ===================== -->
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
-  <script src="firebase.js?v=9"></script>
-  <script src="app.js?v=9"></script>
+  <script src="firebase.js?v=10"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>

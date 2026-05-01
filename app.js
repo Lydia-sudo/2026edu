@@ -34,7 +34,9 @@ const modalOverlay  = $('modalOverlay');
 const modalTitle    = $('modalTitle');
 const fTitle        = $('fTitle');
 const fDesc         = $('fDesc');
+const fStart        = $('fStart');
 const fDue          = $('fDue');
+const fEnrolled     = $('fEnrolled');
 const fDone         = $('fDone');
 const formError     = $('formError');
 const toastEl       = $('toast');
@@ -231,7 +233,9 @@ async function saveEdu(e) {
   const data = {
     title,
     description: fDesc.value.trim(),
+    startDate:   fStart.value || null,
     dueDate:     due,
+    enrolled:    fEnrolled.checked,
     completed:   fDone.checked,
     updatedAt:   firebase.firestore.FieldValue.serverTimestamp(),
   };
@@ -268,6 +272,18 @@ async function deleteEdu(id) {
   }
 }
 
+async function toggleEnroll(id, current) {
+  try {
+    await eduRef(id).update({
+      enrolled: !current,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (err) {
+    console.error('수강신청 업데이트 오류:', err);
+    showToast('업데이트 중 오류가 발생했습니다.');
+  }
+}
+
 async function toggleComplete(id, current) {
   try {
     await eduRef(id).update({
@@ -283,12 +299,21 @@ async function toggleComplete(id, current) {
 // ─── 상태 계산 ─────────────────────────────────────────────
 function getStatus(edu) {
   if (edu.completed) return 'done';
-  if (!edu.dueDate)  return 'normal';
   const today = todayMidnight();
-  const due   = parseLocalDate(edu.dueDate);
+
+  // 시작일 전이면 수강 대기
+  if (edu.startDate) {
+    const start = parseLocalDate(edu.startDate);
+    if (today < start) return 'waiting';
+  }
+
+  // 수강 신청 완료 (미이수)
+  if (edu.enrolled) return 'enrolled';
+
+  if (!edu.dueDate) return 'normal';
+  const due = parseLocalDate(edu.dueDate);
   if (due < today) return 'overdue';
-  const diffDays = (due - today) / 86400000;
-  if (diffDays <= 7) return 'soon';
+  if ((due - today) / 86400000 <= 7) return 'soon';
   return 'normal';
 }
 
@@ -371,11 +396,15 @@ function getUrl(edu) {
 
 function renderCard(edu) {
   const status    = getStatus(edu);
-  const dueText   = formatDate(edu.dueDate);
-  const countdown = getDueBadge(status, edu.dueDate);
-  const badgeCls  = { done: 'done', overdue: 'overdue', soon: 'soon', normal: '' }[status] || '';
+  const badgeCls  = { done:'done', overdue:'overdue', soon:'soon', enrolled:'', waiting:'', normal:'' }[status] || '';
+  const countdown = getDueBadge(status, edu.dueDate, edu.startDate);
   const orderNum  = getOrderNum(edu);
   const url       = getUrl(edu);
+
+  // 날짜 표시: 시작일 있으면 범위, 없으면 마감일만
+  const dateStr = edu.startDate
+    ? `${formatShort(edu.startDate)} ~ ${formatShort(edu.dueDate)}`
+    : formatDate(edu.dueDate);
 
   return `
     <div class="edu-card status-${esc(status)}" role="listitem">
@@ -387,28 +416,31 @@ function renderCard(edu) {
         <div class="card-title">${orderNum < 999 ? `<span class="card-num">${orderNum}.</span> ` : ''}${esc(edu.title)}</div>
         ${edu.description ? `<div class="card-desc">${esc(edu.description)}</div>` : ''}
         <div class="card-meta">
-          <span class="due-badge ${badgeCls}">
-            📅 ${dueText}${countdown ? ' ' + countdown : ''}
-          </span>
-          ${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer" class="link-badge">🔗 교육 바로가기</a>` : ''}
+          <span class="due-badge ${badgeCls}">📅 ${dateStr}${countdown ? ' · ' + countdown : ''}</span>
+          <button class="enroll-btn ${edu.enrolled ? 'on' : ''}"
+                  onclick="toggleEnroll('${esc(edu.id)}', ${!!edu.enrolled})">
+            ${edu.enrolled ? '✓ 수강신청 완료' : '○ 수강신청 전'}
+          </button>
+          ${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer" class="link-badge">🔗 바로가기</a>` : ''}
         </div>
       </div>
       <div class="card-actions">
-        <button class="icon-btn" title="수정"
-                onclick="openEditModal('${esc(edu.id)}')">✏️</button>
-        <button class="icon-btn delete" title="삭제"
-                onclick="deleteEdu('${esc(edu.id)}')">🗑️</button>
+        <button class="icon-btn" title="수정" onclick="openEditModal('${esc(edu.id)}')">✏️</button>
+        <button class="icon-btn delete" title="삭제" onclick="deleteEdu('${esc(edu.id)}')">🗑️</button>
       </div>
     </div>`;
 }
 
-function getDueBadge(status, dueDate) {
-  if (status === 'done')    return '✓ 완료';
+function getDueBadge(status, dueDate, startDate) {
+  if (status === 'done')     return '✓ 이수 완료';
+  if (status === 'enrolled') return '📚 수강 중';
+  if (status === 'waiting') {
+    const diff = Math.round((parseLocalDate(startDate) - todayMidnight()) / 86400000);
+    return diff === 0 ? '오늘부터 수강 가능' : `${diff}일 후 수강 가능`;
+  }
   if (status === 'overdue') return '⚠ 기한 초과';
   if (!dueDate) return '';
-  const today = todayMidnight();
-  const due   = parseLocalDate(dueDate);
-  const diff  = Math.round((due - today) / 86400000);
+  const diff = Math.round((parseLocalDate(dueDate) - todayMidnight()) / 86400000);
   if (diff === 0) return '⚡ 오늘 마감';
   if (status === 'soon') return `⏰ D-${diff}`;
   return `D-${diff}`;
@@ -418,6 +450,12 @@ function formatDate(str) {
   if (!str) return '-';
   const d = parseLocalDate(str);
   return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+
+function formatShort(str) {
+  if (!str) return '-';
+  const d = parseLocalDate(str);
+  return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
 function esc(str) {
@@ -439,8 +477,10 @@ function openModal() {
   // 기본 마감일: 30일 후
   const d = new Date();
   d.setDate(d.getDate() + 30);
-  fDue.value   = d.toISOString().split('T')[0];
-  fDone.checked = false;
+  fStart.value    = '';
+  fDue.value      = d.toISOString().split('T')[0];
+  fEnrolled.checked = false;
+  fDone.checked   = false;
 
   modalOverlay.classList.remove('hidden');
   fTitle.focus();
@@ -452,10 +492,12 @@ function openEditModal(id) {
 
   editId = id;
   modalTitle.textContent = '교육 수정';
-  fTitle.value  = edu.title       || '';
-  fDesc.value   = edu.description || '';
-  fDue.value    = edu.dueDate     || '';
-  fDone.checked = edu.completed   || false;
+  fTitle.value      = edu.title       || '';
+  fDesc.value       = edu.description || '';
+  fStart.value      = edu.startDate   || '';
+  fDue.value        = edu.dueDate     || '';
+  fEnrolled.checked = edu.enrolled    || false;
+  fDone.checked     = edu.completed   || false;
   formError.classList.add('hidden');
 
   modalOverlay.classList.remove('hidden');
