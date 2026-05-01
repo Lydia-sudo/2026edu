@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[미리보기] 군 교육 이수 관리 시스템</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .demo-banner {
+      background: #7c3aed;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 20px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .demo-banner a {
+      color: #e9d5ff;
+      text-decoration: underline;
+      font-weight: 700;
+    }
+    .demo-tag {
+      background: rgba(255,255,255,.2);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 11px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 미리보기 안내 배너 -->
+  <div class="demo-banner">
+    <span class="demo-tag">DEMO</span>
+    미리보기 모드입니다 — 데이터는 브라우저에만 저장됩니다. Firebase 설정 후
+    <a href="index.html">실제 앱(index.html)</a>을 사용하세요.
+  </div>
+
+  <!-- 앱 화면 (로딩/로그인 없이 바로 표시) -->
+  <div id="appScreen">
+    <header>
+      <div class="header-inner">
+        <div class="brand">
+          <span class="brand-star">★</span>
+          <span class="brand-text">교육 이수 관리</span>
+        </div>
+        <div class="user-info">
+          <img class="user-avatar"
+               src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='33' height='33'%3E%3Crect width='33' height='33' rx='16.5' fill='%232563eb'/%3E%3Ctext x='16.5' y='23' text-anchor='middle' fill='white' font-size='16' font-weight='700' font-family='sans-serif'%3E홍%3C/text%3E%3C/svg%3E"
+               alt="프로필">
+          <span class="user-name">홍길동 병장</span>
+          <span style="font-size:12px;opacity:.6;color:#fff;">(데모)</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- 통계 -->
+      <section class="stats">
+        <div class="stat-card">
+          <div class="stat-num" id="statTotal">0</div>
+          <div class="stat-lbl">전체 교육</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-num" id="statDone">0</div>
+          <div class="stat-lbl">이수 완료</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-num" id="statPending">0</div>
+          <div class="stat-lbl">미이수</div>
+        </div>
+        <div class="stat-card blue progress-card">
+          <div class="stat-lbl">전체 진행률</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-pct" id="progressPct">0%</div>
+        </div>
+      </section>
+
+      <!-- 컨트롤 -->
+      <section class="controls">
+        <div class="filters">
+          <button class="filter active" onclick="setFilter(this,'all')">전체</button>
+          <button class="filter" onclick="setFilter(this,'pending')">미이수</button>
+          <button class="filter" onclick="setFilter(this,'done')">완료</button>
+          <button class="filter" onclick="setFilter(this,'overdue')">기한초과</button>
+          <button class="filter" onclick="setFilter(this,'soon')">임박</button>
+        </div>
+        <button class="btn primary" onclick="openModal()">+ 교육 추가</button>
+      </section>
+
+      <!-- 교육 목록 -->
+      <section>
+        <div id="emptyState" class="empty-state hidden">
+          <div class="empty-icon">📋</div>
+          <h3>등록된 교육이 없습니다</h3>
+          <p>아래 버튼을 눌러 첫 번째 교육 항목을 추가해보세요</p>
+          <button class="btn primary" onclick="openModal()">+ 첫 교육 추가하기</button>
+        </div>
+        <div id="cardContainer" class="card-container" role="list"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 추가/수정 모달 -->
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="modalTitle">교육 추가</h2>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <form id="eduForm" onsubmit="saveEdu(event)" novalidate>
+        <div class="field">
+          <label for="fTitle">교육 제목 <span class="req">*</span></label>
+          <input type="text" id="fTitle" placeholder="예: 개인정보보호 교육" maxlength="100" required>
+        </div>
+        <div class="field">
+          <label for="fDesc">설명 <span class="opt">(선택)</span></label>
+          <textarea id="fDesc" placeholder="교육 내용이나 메모를 입력하세요" rows="3" maxlength="500"></textarea>
+        </div>
+        <div class="field">
+          <label for="fDue">마감일 <span class="req">*</span></label>
+          <input type="date" id="fDue" required>
+        </div>
+        <div class="field-check">
+          <input type="checkbox" id="fDone">
+          <label for="fDone">이수 완료로 표시</label>
+        </div>
+        <div class="field-error hidden" id="formError"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn outline" onclick="closeModal()">취소</button>
+          <button type="submit" class="btn primary">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 토스트 -->
+  <div id="toast" class="toast hidden"></div>
+
+<script>
+'use strict';
+
+// ── 데모 초기 데이터 (오늘 기준 2026-05-01) ──────────────
+const DEMO_KEY = 'edu_demo_data';
+
+const sampleData = [
+  {
+    id: 'd1',
+    title: '개인정보보호 교육',
+    description: '개인정보 처리 및 보호에 관한 연간 필수 교육',
+    dueDate: '2026-04-20',
+    completed: false,
+  },
+  {
+    id: 'd2',
+    title: '성희롱·성폭력 예방 교육',
+    description: '직장 내 성희롱 예방 및 처리 절차 안내',
+    dueDate: '2026-04-28',
+    completed: false,
+  },
+  {
+    id: 'd3',
+    title: '사이버 보안 교육',
+    description: '악성코드 감염 예방 및 정보보호 실천 요령',
+    dueDate: '2026-05-05',
+    completed: false,
+  },
+  {
+    id: 'd4',
+    title: '군 정신전력 교육',
+    description: '국가관·안보관 함양 온라인 교육',
+    dueDate: '2026-05-07',
+    completed: false,
+  },
+  {
+    id: 'd5',
+    title: '직장 내 괴롭힘 예방 교육',
+    description: '',
+    dueDate: '2026-06-30',
+    completed: false,
+  },
+  {
+    id: 'd6',
+    title: '청렴·반부패 교육',
+    description: '공직 윤리 및 청렴 의무 관련 연간 필수 교육',
+    dueDate: '2026-07-31',
+    completed: false,
+  },
+  {
+    id: 'd7',
+    title: '소방·안전 교육',
+    description: '화재 예방 및 피난 요령 숙지',
+    dueDate: '2026-04-15',
+    completed: true,
+  },
+  {
+    id: 'd8',
+    title: '부대 보안 규정 교육',
+    description: '군사 기밀 보호 및 보안 사고 예방',
+    dueDate: '2026-03-31',
+    completed: true,
+  },
+];
+
+// ── 상태 ──────────────────────────────────────────────────
+let edus      = [];
+let editId    = null;
+let curFilter = 'all';
+
+// ── 초기화 ────────────────────────────────────────────────
+function init() {
+  const saved = localStorage.getItem(DEMO_KEY);
+  edus = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(sampleData));
+  render();
+}
+
+function save() {
+  localStorage.setItem(DEMO_KEY, JSON.stringify(edus));
+}
+
+// ── 날짜 헬퍼 ─────────────────────────────────────────────
+function todayMidnight() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function parseLocal(str) {
+  const [y, m, d] = str.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function getStatus(edu) {
+  if (edu.completed) return 'done';
+  if (!edu.dueDate)  return 'normal';
+  const today = todayMidnight();
+  const due   = parseLocal(edu.dueDate);
+  if (due < today) return 'overdue';
+  if ((due - today) / 86400000 <= 7) return 'soon';
+  return 'normal';
+}
+
+function formatDate(str) {
+  if (!str) return '-';
+  const d = parseLocal(str);
+  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+}
+
+function getDueBadge(status, dueDate) {
+  if (status === 'done')    return '✓ 완료';
+  if (status === 'overdue') return '⚠ 기한 초과';
+  if (!dueDate) return '';
+  const diff = Math.round((parseLocal(dueDate) - todayMidnight()) / 86400000);
+  if (diff === 0)     return '⚡ 오늘 마감';
+  if (status === 'soon') return `⏰ D-${diff}`;
+  return `D-${diff}`;
+}
+
+// ── CRUD ──────────────────────────────────────────────────
+function saveEdu(e) {
+  e.preventDefault();
+  const err = document.getElementById('formError');
+  err.classList.add('hidden');
+
+  const title = document.getElementById('fTitle').value.trim();
+  const due   = document.getElementById('fDue').value;
+  if (!title) { err.textContent = '제목을 입력하세요.'; err.classList.remove('hidden'); return; }
+  if (!due)   { err.textContent = '마감일을 선택하세요.'; err.classList.remove('hidden'); return; }
+
+  const record = {
+    title,
+    description: document.getElementById('fDesc').value.trim(),
+    dueDate:     due,
+    completed:   document.getElementById('fDone').checked,
+  };
+
+  if (editId) {
+    const idx = edus.findIndex(x => x.id === editId);
+    if (idx !== -1) edus[idx] = { ...edus[idx], ...record };
+    showToast('교육이 수정되었습니다.');
+  } else {
+    record.id = 'u' + Date.now();
+    edus.push(record);
+    showToast('교육이 추가되었습니다.');
+  }
+
+  save();
+  closeModal();
+  render();
+}
+
+function deleteEdu(id) {
+  const edu = edus.find(x => x.id === id);
+  if (!edu) return;
+  if (!confirm(`"${edu.title}" 교육을 삭제하시겠습니까?`)) return;
+  edus = edus.filter(x => x.id !== id);
+  save();
+  render();
+  showToast('삭제되었습니다.');
+}
+
+function toggleComplete(id, current) {
+  const edu = edus.find(x => x.id === id);
+  if (edu) { edu.completed = !current; save(); render(); }
+}
+
+// ── 렌더링 ────────────────────────────────────────────────
+function render() {
+  const total   = edus.length;
+  const done    = edus.filter(e => e.completed).length;
+  const pct     = total === 0 ? 0 : Math.round(done / total * 100);
+
+  document.getElementById('statTotal').textContent   = total;
+  document.getElementById('statDone').textContent    = done;
+  document.getElementById('statPending').textContent = total - done;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent  = pct + '%';
+
+  let list = [...edus];
+  if (curFilter === 'done')    list = list.filter(e => e.completed);
+  if (curFilter === 'pending') list = list.filter(e => !e.completed);
+  if (curFilter === 'overdue') list = list.filter(e => getStatus(e) === 'overdue');
+  if (curFilter === 'soon')    list = list.filter(e => getStatus(e) === 'soon');
+  list.sort((a, b) => {
+    if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    return (a.dueDate || '').localeCompare(b.dueDate || '');
+  });
+
+  const empty = document.getElementById('emptyState');
+  const cards = document.getElementById('cardContainer');
+  if (list.length === 0) {
+    empty.classList.remove('hidden'); cards.classList.add('hidden'); return;
+  }
+  empty.classList.add('hidden'); cards.classList.remove('hidden');
+  cards.innerHTML = list.map(card).join('');
+}
+
+function card(edu) {
+  const status  = getStatus(edu);
+  const badge   = getDueBadge(status, edu.dueDate);
+  const bCls    = {done:'done', overdue:'overdue', soon:'soon', normal:''}[status] || '';
+  const e = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return `
+    <div class="edu-card status-${e(status)}" role="listitem">
+      <input type="checkbox" class="card-check" ${edu.completed?'checked':''}
+        onchange="toggleComplete('${e(edu.id)}',${edu.completed})">
+      <div class="card-body">
+        <div class="card-title">${e(edu.title)}</div>
+        ${edu.description ? `<div class="card-desc">${e(edu.description)}</div>` : ''}
+        <div class="card-meta">
+          <span class="due-badge ${bCls}">📅 ${formatDate(edu.dueDate)}${badge?' '+badge:''}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn" onclick="openEditModal('${e(edu.id)}')" title="수정">✏️</button>
+        <button class="icon-btn delete" onclick="deleteEdu('${e(edu.id)}')" title="삭제">🗑️</button>
+      </div>
+    </div>`;
+}
+
+// ── 필터 ──────────────────────────────────────────────────
+function setFilter(btn, filter) {
+  document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  curFilter = filter;
+  render();
+}
+
+// ── 모달 ──────────────────────────────────────────────────
+function openModal() {
+  editId = null;
+  document.getElementById('modalTitle').textContent = '교육 추가';
+  document.getElementById('eduForm').reset();
+  document.getElementById('formError').classList.add('hidden');
+  const d = new Date(); d.setDate(d.getDate() + 30);
+  document.getElementById('fDue').value = d.toISOString().split('T')[0];
+  document.getElementById('modalOverlay').classList.remove('hidden');
+  document.getElementById('fTitle').focus();
+}
+
+function openEditModal(id) {
+  const edu = edus.find(x => x.id === id);
+  if (!edu) return;
+  editId = id;
+  document.getElementById('modalTitle').textContent = '교육 수정';
+  document.getElementById('fTitle').value = edu.title || '';
+  document.getElementById('fDesc').value  = edu.description || '';
+  document.getElementById('fDue').value   = edu.dueDate || '';
+  document.getElementById('fDone').checked = edu.completed || false;
+  document.getElementById('formError').classList.add('hidden');
+  document.getElementById('modalOverlay').classList.remove('hidden');
+  document.getElementById('fTitle').focus();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.add('hidden');
+  editId = null;
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── 토스트 ────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), 2500);
+}
+
+// ── 시작 ──────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
