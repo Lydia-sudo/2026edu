@@ -342,7 +342,7 @@ function renderCards() {
   // 정렬: 미완료 → 완료, order 번호 → 마감일 오름차순
   list.sort((a, b) => {
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
-    const oa = a.order ?? 999, ob = b.order ?? 999;
+    const oa = getOrderNum(a), ob = getOrderNum(b);
     if (oa !== ob) return oa - ob;
     return (a.dueDate || '').localeCompare(b.dueDate || '');
   });
@@ -355,6 +355,13 @@ function renderCards() {
   emptyState.classList.add('hidden');
   cardContainer.classList.remove('hidden');
   cardContainer.innerHTML = list.map(renderCard).join('');
+}
+
+// Firestore에 order 없으면 DEFAULT_EDUS 제목으로 찾아서 반환
+function getOrderNum(edu) {
+  if (edu.order) return edu.order;
+  const def = DEFAULT_EDUS.find(d => d.title === edu.title);
+  return def ? def.order : 999;
 }
 
 function renderCard(edu) {
@@ -370,7 +377,7 @@ function renderCard(edu) {
              onchange="toggleComplete('${esc(edu.id)}', ${edu.completed})"
              aria-label="${esc(edu.title)} 이수 완료 체크">
       <div class="card-body">
-        <div class="card-title">${edu.order ? `<span class="card-num">${edu.order}.</span> ` : ''}${esc(edu.title)}</div>
+        <div class="card-title">${getOrderNum(edu) < 999 ? `<span class="card-num">${getOrderNum(edu)}.</span> ` : ''}${esc(edu.title)}</div>
         ${edu.description
           ? `<div class="card-desc">${esc(edu.description)}</div>`
           : ''}
