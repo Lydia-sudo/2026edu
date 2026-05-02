@@ -147,10 +147,12 @@ function emailSignUp() {
     .catch(err => showAuthError(authErrMsg(err.code)));
 }
 
+// ★ Vercel 배포 후 실제 URL로 교체하세요
+const KAKAO_API_URL = 'https://VERCEL_URL/api/kakaoCustomToken';
+
 async function kakaoSignIn() {
   clearAuthError();
   try {
-    // 카카오 로그인 → 액세스 토큰 획득 (KakaoTalk 인앱에서 네이티브 동작)
     const accessToken = await new Promise((resolve, reject) => {
       Kakao.Auth.login({
         success: authObj => resolve(authObj.access_token),
@@ -158,12 +160,15 @@ async function kakaoSignIn() {
       });
     });
 
-    // Cloud Function으로 Firebase 커스텀 토큰 발급
-    const kakaoCustomToken = functions.httpsCallable('kakaoCustomToken');
-    const result = await kakaoCustomToken({ accessToken });
+    const res  = await fetch(KAKAO_API_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ accessToken }),
+    });
+    const data = await res.json();
+    if (!data.token) throw new Error('토큰 발급 실패');
 
-    // Firebase 로그인
-    await auth.signInWithCustomToken(result.data.token);
+    await auth.signInWithCustomToken(data.token);
   } catch (err) {
     console.error('카카오 로그인 오류:', err);
     showAuthError('카카오 로그인에 실패했습니다. 다시 시도해주세요.');
