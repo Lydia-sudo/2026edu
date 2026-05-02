@@ -86,6 +86,19 @@ async function seedDefaultEdus() {
   if (changed) await batch.commit();
 }
 
+// ─── Google redirect 결과 처리 (signInWithRedirect 폴백용) ──
+auth.getRedirectResult()
+  .then(result => {
+    // redirect 로그인 성공 시 onAuthStateChanged가 처리하므로 별도 처리 불필요
+  })
+  .catch(err => {
+    if (err.code !== 'auth/no-auth-event') {
+      showAuthError(authErrMsg(err.code));
+      loadingScreen.classList.add('hidden');
+      loginScreen.classList.remove('hidden');
+    }
+  });
+
 // ─── 인증 상태 감지 ────────────────────────────────────────
 auth.onAuthStateChanged(async user => {
   loadingScreen.classList.add('hidden');
@@ -146,7 +159,14 @@ function googleSignIn() {
   clearAuthError();
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
-    .catch(err => showAuthError(authErrMsg(err.code)));
+    .catch(err => {
+      if (err.code === 'auth/popup-blocked') {
+        // 팝업 차단 환경(모바일 등)에서는 redirect 방식으로 폴백
+        auth.signInWithRedirect(provider);
+      } else {
+        showAuthError(authErrMsg(err.code));
+      }
+    });
 }
 
 function resetPassword() {
@@ -179,7 +199,10 @@ function authErrMsg(code) {
     'auth/weak-password':        '비밀번호가 너무 약합니다. 6자 이상으로 설정하세요.',
     'auth/too-many-requests':    '로그인 시도가 너무 많습니다. 잠시 후 다시 시도하세요.',
     'auth/popup-closed-by-user': '로그인 창이 닫혔습니다. 다시 시도해주세요.',
+    'auth/popup-blocked':        '팝업이 차단되었습니다. 리디렉션 방식으로 재시도합니다...',
+    'auth/cancelled-popup-request': '로그인 요청이 취소되었습니다. 다시 시도해주세요.',
     'auth/network-request-failed': '네트워크 오류가 발생했습니다. 인터넷 연결을 확인하세요.',
+    'auth/internal-error':       '인증 오류가 발생했습니다. 잠시 후 다시 시도하세요.',
   };
   return m[code] || '오류가 발생했습니다. (' + code + ')';
 }
