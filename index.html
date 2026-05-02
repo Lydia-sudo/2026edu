@@ -5,48 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>군 교육 이수 관리 시스템</title>
   <link rel="stylesheet" href="style.css?v=11">
-  <script>
-    // 인앱 브라우저 감지 → 외부 브라우저 자동 전환 (Google OAuth 지원을 위해)
-    (function () {
-      var ua = navigator.userAgent;
-      var isKakao = /KAKAOTALK/i.test(ua);
-      var isNaver = /NAVER\(inapp/i.test(ua);
-      var isInApp = isKakao || isNaver ||
-        /Instagram|FBAV|FBAN|Line|Snapchat|MicroMessenger/i.test(ua);
-      if (!isInApp) return;
-
-      var isAndroid = /Android/i.test(ua);
-      var isIOS = /iPhone|iPad|iPod/i.test(ua);
-      var url = location.href;
-
-      if (isAndroid) {
-        // Android: Chrome으로 강제 전환 (사용자 액션 불필요)
-        location.href = 'intent://' + location.host + location.pathname +
-          location.search + '#Intent;scheme=https;package=com.android.chrome;end';
-      } else if (isIOS) {
-        // iOS: 자동 전환 불가 — 안내 화면만 표시
-        document.addEventListener('DOMContentLoaded', function () {
-          document.body.innerHTML =
-            '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;' +
-            'height:100vh;padding:32px;font-family:sans-serif;text-align:center;background:#f8fafc;">' +
-            '<div style="font-size:48px;margin-bottom:16px;">🔒</div>' +
-            '<h2 style="font-size:18px;font-weight:700;margin-bottom:12px;color:#1e293b;">' +
-            'Safari에서 열어주세요</h2>' +
-            '<p style="font-size:14px;color:#64748b;line-height:1.6;margin-bottom:24px;">' +
-            '카카오톡 브라우저에서는<br>Google 로그인을 사용할 수 없습니다.<br><br>' +
-            '우측 하단 <strong>···</strong> 버튼 →<br>' +
-            '<strong>Safari로 열기</strong>를 눌러주세요.</p>' +
-            '<div style="background:#e2e8f0;border-radius:12px;padding:16px;font-size:13px;color:#475569;">' +
-            '또는 주소를 복사해서<br>Safari 주소창에 붙여넣으세요.<br><br>' +
-            '<strong style="word-break:break-all;">' + url + '</strong></div>' +
-            '<button onclick="navigator.clipboard&&navigator.clipboard.writeText(\'' + url + '\')" ' +
-            'style="margin-top:16px;padding:12px 24px;background:#2563eb;color:white;border:none;' +
-            'border-radius:8px;font-size:14px;font-weight:600;">주소 복사</button>' +
-            '</div>';
-        });
-      }
-    })();
-  </script>
   <!-- Firebase SDK (compat v10) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>

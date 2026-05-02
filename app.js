@@ -86,19 +86,6 @@ async function seedDefaultEdus() {
   if (changed) await batch.commit();
 }
 
-// ─── Google redirect 결과 처리 (signInWithRedirect 폴백용) ──
-auth.getRedirectResult()
-  .then(result => {
-    // redirect 로그인 성공 시 onAuthStateChanged가 처리하므로 별도 처리 불필요
-  })
-  .catch(err => {
-    if (err.code !== 'auth/no-auth-event') {
-      showAuthError(authErrMsg(err.code));
-      loadingScreen.classList.add('hidden');
-      loginScreen.classList.remove('hidden');
-    }
-  });
-
 // ─── 인증 상태 감지 ────────────────────────────────────────
 auth.onAuthStateChanged(async user => {
   loadingScreen.classList.add('hidden');
@@ -155,30 +142,11 @@ function emailSignUp() {
     .catch(err => showAuthError(authErrMsg(err.code)));
 }
 
-function isInAppBrowser() {
-  return /KAKAOTALK|NAVER|Instagram|FBAV|FBAN|Line|Snapchat|Twitter|MicroMessenger|WebView|wv\)/i.test(navigator.userAgent);
-}
-
-function isMobile() {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
 function googleSignIn() {
   clearAuthError();
   const provider = new firebase.auth.GoogleAuthProvider();
-  if (isMobile()) {
-    // 모바일은 팝업 대신 redirect 사용 (인앱 브라우저는 index.html에서 미리 처리)
-    auth.signInWithRedirect(provider);
-  } else {
-    auth.signInWithPopup(provider)
-      .catch(err => {
-        if (err.code === 'auth/popup-blocked') {
-          auth.signInWithRedirect(provider);
-        } else {
-          showAuthError(authErrMsg(err.code));
-        }
-      });
-  }
+  auth.signInWithPopup(provider)
+    .catch(err => showAuthError(authErrMsg(err.code)));
 }
 
 function resetPassword() {
