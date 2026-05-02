@@ -1,4 +1,5 @@
 'use strict';
+// v1.0.0
 
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { setGlobalOptions }   = require('firebase-functions/v2');
