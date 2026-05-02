@@ -254,6 +254,12 @@ body {
   background: var(--blue-pale);
   color: var(--blue);
 }
+.auth-msg.warn {
+  border-left-color: #d97706;
+  background: #fffbeb;
+  color: #92400e;
+  white-space: pre-line;
+}
 
 .google-desc {
   text-align: center;

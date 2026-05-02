@@ -155,18 +155,63 @@ function emailSignUp() {
     .catch(err => showAuthError(authErrMsg(err.code)));
 }
 
+function isInAppBrowser() {
+  return /KAKAOTALK|NAVER|Instagram|FBAV|FBAN|Line|Snapchat|Twitter|MicroMessenger|WebView|wv\)/i.test(navigator.userAgent);
+}
+
+function isMobile() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 function googleSignIn() {
   clearAuthError();
+
+  if (isInAppBrowser()) {
+    const current = location.href;
+    // Android: Chrome으로 강제 열기 시도
+    const chromeIntent = `intent://${location.host}${location.pathname}#Intent;scheme=https;package=com.android.chrome;end`;
+    showAuthError(
+      '카카오톡 브라우저에서는 Google 로그인이 지원되지 않습니다.\n' +
+      'Chrome 또는 Safari에서 이 페이지를 열어주세요.',
+      'warn'
+    );
+    // 외부 브라우저로 열기 버튼 표시
+    const existing = document.getElementById('openExternalBtn');
+    if (!existing) {
+      const btn = document.createElement('button');
+      btn.id = 'openExternalBtn';
+      btn.className = 'btn outline full';
+      btn.style.marginTop = '8px';
+      btn.textContent = '외부 브라우저로 열기';
+      btn.onclick = () => {
+        // Android Intent 방식 먼저 시도, 실패 시 클립보드 복사
+        try {
+          location.href = chromeIntent;
+        } catch(e) {
+          navigator.clipboard.writeText(current)
+            .then(() => showAuthError('주소를 복사했습니다. Chrome에 붙여넣어 열어주세요.', 'info'))
+            .catch(() => showAuthError('주소창에 직접 입력해주세요: ' + current, 'info'));
+        }
+      };
+      authError.insertAdjacentElement('afterend', btn);
+    }
+    return;
+  }
+
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .catch(err => {
-      if (err.code === 'auth/popup-blocked') {
-        // 팝업 차단 환경(모바일 등)에서는 redirect 방식으로 폴백
-        auth.signInWithRedirect(provider);
-      } else {
-        showAuthError(authErrMsg(err.code));
-      }
-    });
+  if (isMobile()) {
+    // 모바일은 팝업 대신 redirect 사용
+    auth.signInWithRedirect(provider);
+  } else {
+    auth.signInWithPopup(provider)
+      .catch(err => {
+        if (err.code === 'auth/popup-blocked') {
+          auth.signInWithRedirect(provider);
+        } else {
+          showAuthError(authErrMsg(err.code));
+        }
+      });
+  }
 }
 
 function resetPassword() {
@@ -184,7 +229,7 @@ function doSignOut() {
 
 function showAuthError(msg, type) {
   authError.textContent = msg;
-  authError.className = 'auth-msg' + (type === 'info' ? ' info' : '');
+  authError.className = 'auth-msg' + (type === 'info' ? ' info' : type === 'warn' ? ' warn' : '');
   authError.classList.remove('hidden');
 }
 function clearAuthError() { authError.classList.add('hidden'); }
