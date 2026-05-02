@@ -7,7 +7,7 @@
 // ─── 카카오 SDK 초기화 ────────────────────────────────────
 // ★ 카카오 개발자 콘솔(developers.kakao.com)에서 발급한
 //   JavaScript 앱 키로 교체하세요.
-Kakao.init('YOUR_KAKAO_JS_APP_KEY');
+Kakao.init('f298eaa955e093aa0d9d1e38167ca9a9');
 
 // ─── 상태 ─────────────────────────────────────────────────
 let uid        = null;   // 현재 로그인 사용자 ID
