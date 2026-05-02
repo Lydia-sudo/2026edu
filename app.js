@@ -4,6 +4,11 @@
 //  app.js — 교육 이수 관리 시스템 메인 로직
 // ============================================================
 
+// ─── 카카오 SDK 초기화 ────────────────────────────────────
+// ★ 카카오 개발자 콘솔(developers.kakao.com)에서 발급한
+//   JavaScript 앱 키로 교체하세요.
+Kakao.init('YOUR_KAKAO_JS_APP_KEY');
+
 // ─── 상태 ─────────────────────────────────────────────────
 let uid        = null;   // 현재 로그인 사용자 ID
 let allEdus    = [];     // 전체 교육 항목 배열
@@ -142,11 +147,27 @@ function emailSignUp() {
     .catch(err => showAuthError(authErrMsg(err.code)));
 }
 
-function googleSignIn() {
+async function kakaoSignIn() {
   clearAuthError();
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .catch(err => showAuthError(authErrMsg(err.code)));
+  try {
+    // 카카오 로그인 → 액세스 토큰 획득 (KakaoTalk 인앱에서 네이티브 동작)
+    const accessToken = await new Promise((resolve, reject) => {
+      Kakao.Auth.login({
+        success: authObj => resolve(authObj.access_token),
+        fail:    err     => reject(err),
+      });
+    });
+
+    // Cloud Function으로 Firebase 커스텀 토큰 발급
+    const kakaoCustomToken = functions.httpsCallable('kakaoCustomToken');
+    const result = await kakaoCustomToken({ accessToken });
+
+    // Firebase 로그인
+    await auth.signInWithCustomToken(result.data.token);
+  } catch (err) {
+    console.error('카카오 로그인 오류:', err);
+    showAuthError('카카오 로그인에 실패했습니다. 다시 시도해주세요.');
+  }
 }
 
 function resetPassword() {
@@ -190,9 +211,9 @@ function authErrMsg(code) {
 // 로그인 탭 전환
 function switchTab(tab) {
   $('tabEmail').classList.toggle('active', tab === 'email');
-  $('tabGoogle').classList.toggle('active', tab === 'google');
+  $('tabKakao').classList.toggle('active', tab === 'kakao');
   $('panelEmail').classList.toggle('hidden', tab !== 'email');
-  $('panelGoogle').classList.toggle('hidden', tab !== 'google');
+  $('panelKakao').classList.toggle('hidden', tab !== 'kakao');
   clearAuthError();
 }
 

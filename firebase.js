@@ -27,8 +27,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // 앱 전체에서 사용할 서비스 객체
-const auth = firebase.auth();
-const db   = firebase.firestore();
+const auth      = firebase.auth();
+const db        = firebase.firestore();
+const functions = firebase.app().functions('asia-northeast3');
 
 // 오프라인에서도 기존 데이터를 볼 수 있도록 로컬 캐시 활성화
 db.enablePersistence({ synchronizeTabs: true })

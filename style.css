@@ -71,8 +71,8 @@ body {
 .btn.outline:hover  { background: var(--blue-pale); }
 .btn.ghost    { background: transparent; color: var(--gray-500); border: 1.5px solid var(--gray-300); }
 .btn.ghost:hover    { background: var(--gray-100); }
-.btn.google   { background: var(--white); color: var(--gray-700); border: 2px solid var(--gray-200); }
-.btn.google:hover   { background: var(--gray-50); box-shadow: var(--shadow-md); }
+.btn.kakao        { background: #FEE500; color: rgba(0,0,0,.85); border: none; gap: 10px; }
+.btn.kakao:hover  { background: #F0D900; box-shadow: var(--shadow-md); }
 .btn.full     { width: 100%; }
 
 /* ───── 로딩 화면 ───── */
@@ -261,7 +261,7 @@ body {
   white-space: pre-line;
 }
 
-.google-desc {
+.social-desc {
   text-align: center;
   font-size: 14px;
   color: var(--gray-500);
@@ -669,31 +669,49 @@ main {
 
 /* ───── 반응형 ───── */
 @media (max-width: 720px) {
-  .stats {
-    grid-template-columns: 1fr 1fr;
-  }
+  .stats { grid-template-columns: 1fr 1fr; }
   .header-inner { padding: 0 14px; }
   .brand-text { font-size: 15px; }
   .stat-num { font-size: 28px; }
   .progress-pct { font-size: 18px; }
+  /* 카드 목록 모바일 최적화 */
+  .card-container { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
-  .login-card { padding: 28px 20px; }
+  /* 로그인 화면 */
+  #loginScreen { padding: 16px; align-items: flex-start; padding-top: 40px; }
+  .login-card { padding: 28px 20px; border-radius: 14px; }
   .star-badge { width: 56px; height: 56px; font-size: 28px; }
+  .login-hero { margin-bottom: 20px; }
   .login-hero h1 { font-size: 19px; }
+  /* 버튼 터치 영역 확대 */
+  .btn { min-height: 46px; }
+  .tab { padding: 10px; font-size: 13px; }
+  /* 앱 화면 */
   .controls { flex-direction: column; align-items: stretch; }
   .controls .btn { width: 100%; }
   .user-name { display: none; }
-  main { padding: 16px 14px 48px; gap: 14px; }
-  .edu-card { padding: 14px 14px; gap: 10px; }
-  .modal-box { padding: 22px 18px; }
+  main { padding: 16px 14px 60px; gap: 14px; }
+  .edu-card { padding: 14px; gap: 10px; }
+  /* 필터 가로 스크롤 */
+  .filters {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+  .filter { flex-shrink: 0; }
+  /* 모달 */
+  .modal-box { padding: 22px 18px; border-radius: 14px; }
+  .modal-overlay { align-items: flex-end; }
+  .modal-box { border-radius: 18px 18px 0 0; max-height: 92vh; overflow-y: auto; }
+  /* 통계 */
   .stat-num { font-size: 24px; }
   .stat-lbl { font-size: 10px; }
 }
 
 @media (max-width: 360px) {
   .stats { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .filters { gap: 4px; }
-  .filter { padding: 6px 11px; font-size: 12px; }
+  .filter { padding: 6px 10px; font-size: 12px; }
 }
