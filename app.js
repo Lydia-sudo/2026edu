@@ -368,19 +368,32 @@ function updateStats() {
   const total   = allEdus.length;
   const done    = allEdus.filter(e => e.completed).length;
   const pending = total - done;
+  const overdue = allEdus.filter(e => getStatus(e) === 'overdue').length;
+  const soon    = allEdus.filter(e => getStatus(e) === 'soon').length;
   const pct     = total === 0 ? 0 : Math.round((done / total) * 100);
 
-  statTotalEl.textContent   = total;
-  statDoneEl.textContent    = done;
-  statPendingEl.textContent = pending;
-  progressFill.style.width  = pct + '%';
-  progressPct.textContent   = pct + '%';
-  progressBar.setAttribute('aria-valuenow', pct);
+  $('statTotal').textContent   = total;
+  $('statDone').textContent    = done;
+  $('statPending').textContent = pending;
+  $('statOverdue').textContent = overdue;
+  $('statSoon').textContent    = soon;
+  $('progressFill').style.width  = pct + '%';
+  $('progressPct').textContent   = pct + '%';
 }
 
 function setFilter(btn, filter) {
-  document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  curFilter = filter;
+  renderCards();
+}
+
+function setFilterStory(btn, filter) {
+  // 스토리 버튼 active 상태
+  document.querySelectorAll('.ig-story').forEach(b => b.classList.remove('active'));
+  if (btn && btn.classList.contains('ig-story')) btn.classList.add('active');
+  // 하단 네비 active 상태
+  document.querySelectorAll('.ig-nav-btn[data-filter]').forEach(b => b.classList.remove('active'));
+  const navBtn = document.querySelector(`.ig-nav-btn[data-filter="${filter}"]`);
+  if (navBtn) navBtn.classList.add('active');
   curFilter = filter;
   renderCards();
 }
@@ -424,40 +437,47 @@ function getUrl(edu) {
 }
 
 function renderCard(edu) {
-  const status    = getStatus(edu);
-  const badgeCls  = { done:'done', overdue:'overdue', soon:'soon', enrolled:'', waiting:'', normal:'' }[status] || '';
+  const status   = getStatus(edu);
   const countdown = getDueBadge(status, edu.dueDate, edu.startDate);
-  const orderNum  = getOrderNum(edu);
-  const url       = getUrl(edu);
-
-  // 날짜 표시: 시작일 있으면 범위, 없으면 마감일만
-  const dateStr = edu.startDate
+  const orderNum = getOrderNum(edu);
+  const url      = getUrl(edu);
+  const dateStr  = edu.startDate
     ? `${formatShort(edu.startDate)} ~ ${formatShort(edu.dueDate)}`
     : formatDate(edu.dueDate);
 
+  const statusLabel = { done:'이수 완료', overdue:'기한 초과', soon:'마감 임박',
+    enrolled:'수강 중', waiting:'수강 대기', normal:'미이수' }[status] || '미이수';
+  const cdCls = { done:'done', soon:'soon', enrolled:'enrolled', waiting:'waiting' }[status] || '';
+
   return `
-    <div class="edu-card status-${esc(status)}" role="listitem">
-      <input type="checkbox" class="card-check"
-             ${edu.completed ? 'checked' : ''}
-             onchange="toggleComplete('${esc(edu.id)}', ${edu.completed})"
-             aria-label="${esc(edu.title)} 이수 완료 체크">
-      <div class="card-body">
-        <div class="card-title">${orderNum < 999 ? `<span class="card-num">${orderNum}.</span> ` : ''}${esc(edu.title)}</div>
-        ${edu.description ? `<div class="card-desc">${esc(edu.description)}</div>` : ''}
-        <div class="card-meta">
-          <span class="due-badge ${badgeCls}">📅 ${dateStr}${countdown ? ' · ' + countdown : ''}</span>
-          <button class="enroll-btn ${edu.enrolled ? 'on' : ''}"
-                  onclick="toggleEnroll('${esc(edu.id)}', ${!!edu.enrolled})">
-            ${edu.enrolled ? '✓ 수강신청 완료' : '○ 수강신청 전'}
-          </button>
-          ${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer" class="link-badge">🔗 바로가기</a>` : ''}
+    <article class="ig-post" role="listitem">
+      <div class="ig-post-header">
+        <div class="ig-post-avatar ${status}">${orderNum < 999 ? orderNum : '★'}</div>
+        <div class="ig-post-info">
+          <div class="ig-post-name">${esc(edu.title)}</div>
+          <div class="ig-post-status">${statusLabel}</div>
+        </div>
+        <button class="ig-post-more" onclick="openEditModal('${esc(edu.id)}')">···</button>
+      </div>
+      <div class="ig-post-body">
+        ${edu.description ? `<div class="ig-post-desc">${esc(edu.description)}</div>` : ''}
+        <div class="ig-post-date">📅 ${dateStr}
+          ${countdown ? `<span class="ig-countdown ${cdCls}">${countdown}</span>` : ''}
         </div>
       </div>
-      <div class="card-actions">
-        <button class="icon-btn" title="수정" onclick="openEditModal('${esc(edu.id)}')">✏️</button>
-        <button class="icon-btn delete" title="삭제" onclick="deleteEdu('${esc(edu.id)}')">🗑️</button>
+      <div class="ig-post-actions">
+        <button class="ig-act ${edu.completed ? 'completed' : ''}"
+                onclick="toggleComplete('${esc(edu.id)}', ${edu.completed})">
+          ${edu.completed ? '❤️' : '🤍'} 이수완료
+        </button>
+        <button class="ig-act ${edu.enrolled ? 'enrolled-on' : ''}"
+                onclick="toggleEnroll('${esc(edu.id)}', ${!!edu.enrolled})">
+          ${edu.enrolled ? '📚 수강중' : '📖 수강신청'}
+        </button>
+        ${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer" class="ig-act link-btn">🔗 바로가기</a>` : ''}
+        <button class="ig-act del" onclick="deleteEdu('${esc(edu.id)}')">🗑️</button>
       </div>
-    </div>`;
+    </article>`;
 }
 
 function getDueBadge(status, dueDate, startDate) {

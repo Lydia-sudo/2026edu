@@ -1,717 +1,429 @@
 /* ============================================================
-   군 교육 이수 관리 시스템 — 스타일시트
+   필수교육완료 — Instagram-inspired 스타일
    ============================================================ */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --navy:        #1e3a5f;
-  --navy-dark:   #152d4a;
-  --navy-light:  #264d7a;
-  --blue:        #2563eb;
-  --blue-light:  #3b82f6;
-  --blue-pale:   #eff6ff;
-  --green:       #16a34a;
-  --green-pale:  #dcfce7;
-  --orange:      #d97706;
-  --orange-pale: #fef3c7;
-  --red:         #dc2626;
-  --red-pale:    #fee2e2;
-  --gray-50:     #f8fafc;
-  --gray-100:    #f1f5f9;
-  --gray-200:    #e2e8f0;
-  --gray-300:    #cbd5e1;
-  --gray-400:    #94a3b8;
-  --gray-500:    #64748b;
-  --gray-700:    #334155;
-  --gray-900:    #0f172a;
-  --white:       #ffffff;
-  --shadow-sm:   0 1px 2px rgba(0,0,0,.06);
-  --shadow:      0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
-  --shadow-md:   0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.05);
-  --shadow-lg:   0 10px 15px rgba(0,0,0,.10), 0 4px 6px rgba(0,0,0,.05);
-  --shadow-xl:   0 20px 25px rgba(0,0,0,.15), 0 8px 10px rgba(0,0,0,.08);
-  --radius-sm:   6px;
-  --radius:      10px;
-  --radius-lg:   14px;
+  --ig-bg:        #FAFAFA;
+  --ig-white:     #FFFFFF;
+  --ig-black:     #262626;
+  --ig-gray:      #8E8E8E;
+  --ig-gray-lt:   #DBDBDB;
+  --ig-gray-bg:   #EFEFEF;
+  --ig-blue:      #0095F6;
+  --ig-blue-lt:   #E8F4FD;
+  --ig-green:     #00B300;
+  --ig-red:       #ED4956;
+  --ig-orange:    #F77737;
+  --ig-yellow:    #FEE500;
+  --ig-border:    #DBDBDB;
+  --ig-radius:    12px;
+  --ig-shadow:    0 1px 3px rgba(0,0,0,.08);
+  --story-gradient: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
 }
 
 body {
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
-               'Noto Sans KR', 'Malgun Gothic', sans-serif;
-  background: var(--gray-100);
-  color: var(--gray-700);
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+               'Noto Sans KR', sans-serif;
+  background: var(--ig-bg);
+  color: var(--ig-black);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
 .hidden { display: none !important; }
 
-/* ───── 버튼 ───── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 9px 18px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: background .18s, transform .12s, box-shadow .18s;
-  white-space: nowrap;
-  font-family: inherit;
-  line-height: 1;
-}
-.btn:active { transform: scale(.97); }
-.btn.primary  { background: var(--blue); color: var(--white); }
-.btn.primary:hover  { background: var(--blue-light); box-shadow: var(--shadow-md); }
-.btn.outline  { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
-.btn.outline:hover  { background: var(--blue-pale); }
-.btn.ghost    { background: transparent; color: var(--gray-500); border: 1.5px solid var(--gray-300); }
-.btn.ghost:hover    { background: var(--gray-100); }
-.btn.kakao        { background: #FEE500; color: rgba(0,0,0,.85); border: none; gap: 10px; }
-.btn.kakao:hover  { background: #F0D900; box-shadow: var(--shadow-md); }
-.btn.full     { width: 100%; }
-
-/* ───── 로딩 화면 ───── */
+/* ─── 로딩 ──────────────────────────────────────────────── */
 #loadingScreen {
-  position: fixed;
-  inset: 0;
-  background: var(--navy-dark);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  color: rgba(255,255,255,.8);
-  font-size: 15px;
-  z-index: 9999;
+  position: fixed; inset: 0;
+  background: var(--ig-white);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; z-index: 9999;
 }
-
 .loader-ring {
-  width: 44px;
-  height: 44px;
-  border: 4px solid rgba(255,255,255,.2);
-  border-top-color: rgba(255,255,255,.85);
+  width: 36px; height: 36px;
+  border: 3px solid var(--ig-gray-lt);
+  border-top-color: var(--ig-blue);
   border-radius: 50%;
   animation: spin .75s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ───── 로그인 화면 ───── */
+/* ─── 로그인 화면 ──────────────────────────────────────── */
 #loginScreen {
   min-height: 100vh;
-  background: linear-gradient(145deg, var(--navy-dark) 0%, var(--navy) 55%, #1a4e8a 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: var(--ig-white);
+  display: flex; align-items: center; justify-content: center;
   padding: 20px;
 }
-
-.login-wrapper { width: 100%; max-width: 430px; }
-
-.login-card {
-  background: var(--white);
-  border-radius: 18px;
-  padding: 40px 34px;
-  box-shadow: var(--shadow-xl), 0 0 0 1px rgba(255,255,255,.05);
+.ig-login-wrap { width: 100%; max-width: 380px; }
+.ig-login-card {
+  background: var(--ig-white);
+  border: 1px solid var(--ig-border);
+  border-radius: var(--ig-radius);
+  padding: 40px 40px 24px;
 }
-
-.login-hero {
+.ig-login-logo {
   text-align: center;
   margin-bottom: 28px;
 }
-.star-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 68px;
-  height: 68px;
-  background: var(--navy);
-  color: gold;
-  font-size: 34px;
+.ig-login-icon {
+  width: 64px; height: 64px;
+  background: var(--story-gradient);
+  color: #fff;
+  font-size: 28px;
   border-radius: 50%;
-  margin-bottom: 18px;
-  box-shadow: 0 4px 14px rgba(30,58,95,.35);
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  margin-bottom: 14px;
 }
-.login-hero h1 {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--navy);
-  line-height: 1.45;
-  margin-bottom: 8px;
-  letter-spacing: -0.3px;
+.ig-login-logo h1 {
+  font-size: 22px; font-weight: 800;
+  background: var(--story-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
 }
-.login-hero p {
-  font-size: 13px;
-  color: var(--gray-400);
-  line-height: 1.7;
-}
+.ig-login-logo p { font-size: 12px; color: var(--ig-gray); }
 
 /* 탭 */
 .tab-group {
-  display: flex;
-  background: var(--gray-100);
-  border-radius: var(--radius-sm);
-  padding: 4px;
-  margin-bottom: 20px;
+  display: flex; background: var(--ig-gray-bg);
+  border-radius: 8px; padding: 3px; margin-bottom: 16px;
 }
 .tab {
-  flex: 1;
-  padding: 9px;
-  border: none;
-  background: transparent;
-  border-radius: calc(var(--radius-sm) - 2px);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--gray-500);
-  cursor: pointer;
-  transition: all .18s;
-  font-family: inherit;
+  flex: 1; padding: 8px; border: none;
+  background: transparent; border-radius: 6px;
+  font-size: 13px; font-weight: 600; color: var(--ig-gray);
+  cursor: pointer; transition: all .18s; font-family: inherit;
 }
-.tab.active {
-  background: var(--white);
-  color: var(--navy);
-  box-shadow: var(--shadow);
-}
+.tab.active { background: var(--ig-white); color: var(--ig-black); box-shadow: var(--ig-shadow); }
 
 /* 패널 */
-.panel { display: flex; flex-direction: column; gap: 12px; }
+.panel { display: flex; flex-direction: column; gap: 10px; }
 
 /* 필드 */
-.field { display: flex; flex-direction: column; gap: 5px; }
-.field label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--gray-700);
-}
-.field input,
-.field textarea {
-  padding: 10px 13px;
-  border: 1.5px solid var(--gray-200);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  color: var(--gray-900);
-  transition: border-color .18s, box-shadow .18s;
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 12px; font-weight: 600; color: var(--ig-gray); }
+.field input, .field textarea, .field select {
+  padding: 10px 12px;
+  border: 1.5px solid var(--ig-border);
+  border-radius: 8px;
+  font-size: 14px; font-family: inherit;
+  background: var(--ig-gray-bg);
+  color: var(--ig-black);
+  transition: border-color .18s;
   outline: none;
-  font-family: inherit;
-  background: var(--white);
 }
-.field input:focus,
-.field textarea:focus {
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--ig-blue);
+  background: var(--ig-white);
 }
-.field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.field textarea { resize: vertical; min-height: 72px; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 .field-check {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 2px 0;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; cursor: pointer;
 }
-.field-check input[type="checkbox"] {
-  width: 17px;
-  height: 17px;
-  cursor: pointer;
-  accent-color: var(--blue);
-  flex-shrink: 0;
-}
-.field-check label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--gray-700);
-  cursor: pointer;
+.field-check input[type=checkbox] {
+  width: 18px; height: 18px; accent-color: var(--ig-blue);
 }
 
-.req { color: var(--red); margin-left: 1px; }
-.opt { color: var(--gray-400); font-weight: 400; font-size: 12px; }
+.req { color: var(--ig-red); }
+.opt { color: var(--ig-gray); font-size: 11px; font-weight: 400; }
 
-.field-error {
-  padding: 8px 12px;
-  background: var(--red-pale);
-  color: var(--red);
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  border-left: 3px solid var(--red);
+/* 버튼 공통 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 10px 18px;
+  border-radius: 8px; font-size: 14px; font-weight: 600;
+  cursor: pointer; border: none;
+  transition: background .18s, transform .1s;
+  white-space: nowrap; font-family: inherit; line-height: 1;
+}
+.btn:active { transform: scale(.97); }
+.btn.primary  { background: var(--ig-blue); color: #fff; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.outline  { background: transparent; color: var(--ig-blue); border: 1.5px solid var(--ig-blue); }
+.btn.ghost    { background: transparent; color: var(--ig-gray); border: 1.5px solid var(--ig-border); }
+.btn.kakao    { background: var(--ig-yellow); color: rgba(0,0,0,.85); gap: 10px; }
+.btn.kakao:hover { filter: brightness(.95); }
+.btn.full     { width: 100%; }
+
+.ig-btn-primary {
+  background: var(--ig-blue); color: #fff;
+  padding: 10px 24px; border-radius: 8px;
+  font-size: 14px; font-weight: 700; border: none; cursor: pointer;
 }
 
-/* 인증 메시지 */
+/* auth 메시지 */
 .auth-msg {
-  padding: 11px 13px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  border-left: 3px solid var(--red);
-  background: var(--red-pale);
-  color: var(--red);
-  margin-top: 4px;
-  line-height: 1.5;
+  padding: 10px 12px; border-radius: 8px;
+  font-size: 13px; background: #FFF0F0;
+  color: var(--ig-red); border-left: 3px solid var(--ig-red);
+  line-height: 1.5; margin-top: 4px;
 }
-.auth-msg.info {
-  border-left-color: var(--blue);
-  background: var(--blue-pale);
-  color: var(--blue);
+.auth-msg.info { background: var(--ig-blue-lt); color: var(--ig-blue); border-left-color: var(--ig-blue); }
+.auth-msg.warn { background: #FFFBEB; color: #92400e; border-left-color: var(--ig-orange); white-space: pre-line; }
+
+.social-desc { text-align: center; font-size: 13px; color: var(--ig-gray); padding: 6px 0; }
+
+/* ─── 헤더 ──────────────────────────────────────────────── */
+.ig-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--ig-white);
+  border-bottom: 1px solid var(--ig-border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; height: 52px;
 }
-.auth-msg.warn {
-  border-left-color: #d97706;
-  background: #fffbeb;
-  color: #92400e;
-  white-space: pre-line;
+.ig-logo {
+  font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+  background: var(--story-gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.ig-header-right { display: flex; align-items: center; gap: 12px; }
+.ig-avatar-sm {
+  width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
+  border: 1.5px solid var(--ig-border);
+}
+.ig-icon-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--ig-black); padding: 4px;
+  display: flex; align-items: center;
 }
 
-.social-desc {
-  text-align: center;
-  font-size: 14px;
-  color: var(--gray-500);
-  padding: 8px 0 4px;
+/* ─── 메인 ──────────────────────────────────────────────── */
+.ig-main {
+  padding-bottom: 70px;
 }
 
-/* ───── 헤더 ───── */
-header {
-  background: var(--navy);
-  color: var(--white);
-  box-shadow: var(--shadow-md);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* ─── 스토리 통계 ──────────────────────────────────────── */
+.ig-stories {
+  display: flex; gap: 16px;
+  padding: 14px 16px 10px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid var(--ig-border);
+  scrollbar-width: none;
 }
-.header-inner {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 0 20px;
-  height: 62px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.ig-stories::-webkit-scrollbar { display: none; }
+
+.ig-story {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; background: none; border: none; cursor: pointer;
+  flex-shrink: 0; padding: 0;
+}
+.story-ring {
+  width: 64px; height: 64px; border-radius: 50%;
+  padding: 3px;
+  display: flex; align-items: center; justify-content: center;
+}
+.story-ring.gradient { background: var(--story-gradient); }
+.story-ring.green    { background: #00C851; }
+.story-ring.gray     { background: var(--ig-gray-lt); }
+.story-ring.red      { background: var(--ig-red); }
+.story-ring.orange   { background: var(--ig-orange); }
+.story-ring.active,
+.ig-story.active .story-ring { box-shadow: 0 0 0 3px var(--ig-white), 0 0 0 5px var(--ig-blue); }
+
+.story-inner {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: var(--ig-white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; color: var(--ig-black);
+}
+.story-label {
+  font-size: 11px; color: var(--ig-black); font-weight: 500;
 }
 
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-star { color: gold; font-size: 20px; }
-.brand-text { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
-
-.user-info { display: flex; align-items: center; gap: 10px; }
-.user-avatar {
-  width: 33px;
-  height: 33px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,.25);
-  object-fit: cover;
-  background: var(--navy-light);
-  flex-shrink: 0;
+/* ─── 진행률 바 ─────────────────────────────────────────── */
+.ig-progress-wrap {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--ig-border);
 }
-.user-name {
-  font-size: 13px;
-  opacity: .85;
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.ig-progress-bar {
+  flex: 1; height: 4px; background: var(--ig-gray-lt);
+  border-radius: 2px; overflow: hidden;
 }
-.btn-logout {
-  padding: 5px 13px;
-  background: rgba(255,255,255,.1);
-  border: 1px solid rgba(255,255,255,.2);
-  color: rgba(255,255,255,.9);
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .18s;
-  font-family: inherit;
-}
-.btn-logout:hover { background: rgba(255,255,255,.22); }
-
-/* ───── 메인 컨테이너 ───── */
-main {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 24px 20px 48px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-/* ───── 통계 카드 ───── */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-.stat-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  box-shadow: var(--shadow);
-  border-top: 3px solid var(--gray-200);
-  transition: box-shadow .18s;
-}
-.stat-card:hover { box-shadow: var(--shadow-md); }
-.stat-card.green  { border-top-color: var(--green); }
-.stat-card.orange { border-top-color: var(--orange); }
-.stat-card.blue   { border-top-color: var(--blue); }
-
-.stat-num {
-  font-size: 34px;
-  font-weight: 800;
-  color: var(--navy);
-  line-height: 1;
-  margin-bottom: 5px;
-}
-.stat-card.green  .stat-num { color: var(--green); }
-.stat-card.orange .stat-num { color: var(--orange); }
-.stat-lbl {
-  font-size: 11px;
-  color: var(--gray-400);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .6px;
-}
-
-/* 진행률 카드 */
-.progress-card { display: flex; flex-direction: column; justify-content: center; }
-.progress-bar {
-  height: 10px;
-  background: var(--gray-200);
-  border-radius: 999px;
-  margin: 10px 0 6px;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--blue), var(--blue-light));
-  border-radius: 999px;
-  transition: width .55s cubic-bezier(.4,0,.2,1);
+.ig-progress-fill {
+  height: 100%; background: var(--story-gradient);
+  border-radius: 2px; transition: width .4s ease;
   width: 0%;
 }
-.progress-pct {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--blue);
+.ig-progress-pct { font-size: 13px; font-weight: 700; color: var(--ig-black); min-width: 36px; }
+
+/* ─── 피드 카드 ─────────────────────────────────────────── */
+#cardContainer {
+  display: flex; flex-direction: column;
+}
+
+.ig-post {
+  background: var(--ig-white);
+  border-bottom: 1px solid var(--ig-border);
+  padding: 12px 0;
+}
+
+.ig-post-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 16px 10px;
+}
+.ig-post-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 800; color: #fff;
+  flex-shrink: 0;
+  background: var(--story-gradient);
+}
+.ig-post-avatar.done    { background: linear-gradient(135deg,#00C851,#007E33); }
+.ig-post-avatar.overdue { background: linear-gradient(135deg,#ED4956,#B02035); }
+.ig-post-avatar.soon    { background: linear-gradient(135deg,#F77737,#D4521A); }
+.ig-post-avatar.enrolled { background: linear-gradient(135deg,#0095F6,#0060A8); }
+
+.ig-post-info { flex: 1; min-width: 0; }
+.ig-post-name {
+  font-size: 14px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ig-post-status { font-size: 12px; color: var(--ig-gray); margin-top: 1px; }
+
+.ig-post-more {
+  background: none; border: none; cursor: pointer;
+  color: var(--ig-black); font-size: 18px; padding: 4px 8px;
   line-height: 1;
 }
 
-/* ───── 컨트롤 바 ───── */
-.controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+.ig-post-body { padding: 0 16px 10px; }
+.ig-post-desc { font-size: 14px; color: var(--ig-gray); margin-bottom: 8px; line-height: 1.5; }
+.ig-post-date { font-size: 13px; color: var(--ig-gray); }
+.ig-countdown {
+  display: inline-block; margin-left: 6px;
+  padding: 2px 8px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; color: #fff;
+  background: var(--ig-red);
 }
-.filters { display: flex; gap: 6px; flex-wrap: wrap; }
-.filter {
-  padding: 7px 15px;
-  border: 1.5px solid var(--gray-200);
-  background: var(--white);
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--gray-500);
-  cursor: pointer;
-  transition: all .18s;
-  font-family: inherit;
-}
-.filter:hover  { border-color: var(--blue); color: var(--blue); }
-.filter.active { background: var(--blue); border-color: var(--blue); color: var(--white); }
+.ig-countdown.done    { background: var(--ig-green); }
+.ig-countdown.soon    { background: var(--ig-orange); }
+.ig-countdown.enrolled { background: var(--ig-blue); }
+.ig-countdown.waiting { background: var(--ig-gray); }
 
-/* ───── 빈 상태 ───── */
-.empty-state {
-  text-align: center;
-  padding: 64px 20px;
-  background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  border: 2px dashed var(--gray-200);
-}
-.empty-icon { font-size: 52px; margin-bottom: 18px; }
-.empty-state h3 { font-size: 18px; color: var(--gray-700); margin-bottom: 8px; }
-.empty-state p  { font-size: 14px; color: var(--gray-400); margin-bottom: 22px; }
-
-/* ───── 교육 카드 ───── */
-.card-container { display: flex; flex-direction: column; gap: 10px; }
-
-.edu-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 16px 18px;
-  box-shadow: var(--shadow);
-  border-left: 4px solid var(--gray-200);
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  transition: box-shadow .18s, transform .12s;
-  position: relative;
-}
-.edu-card:hover  { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-
-.edu-card.status-done     { border-left-color: var(--green); }
-.edu-card.status-overdue  { border-left-color: var(--red); }
-.edu-card.status-soon     { border-left-color: var(--orange); }
-.edu-card.status-normal   { border-left-color: var(--blue); }
-.edu-card.status-waiting  { border-left-color: var(--gray-300); }
-.edu-card.status-enrolled { border-left-color: #7c3aed; }
-
-/* 완료된 카드는 살짝 어둡게 */
-.edu-card.status-done { opacity: .75; }
-.edu-card.status-done:hover { opacity: 1; }
-
-/* 체크박스 */
-.card-check {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  margin-top: 3px;
-  cursor: pointer;
-  accent-color: var(--blue);
-}
-
-.card-body { flex: 1; min-width: 0; }
-
-.card-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 4px;
-  word-break: break-word;
-  line-height: 1.45;
-}
-.card-num {
-  display: inline-block;
-  min-width: 22px;
-  color: var(--gray-400);
-  font-weight: 700;
-  font-size: 14px;
-}
-.edu-card.status-done .card-title {
-  text-decoration: line-through;
-  color: var(--gray-400);
-}
-
-.card-desc {
-  font-size: 13px;
-  color: var(--gray-500);
-  line-height: 1.55;
-  margin-bottom: 10px;
-  word-break: break-word;
-}
-
-.card-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
-
-.due-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  background: var(--gray-100);
-  color: var(--gray-500);
-}
-.due-badge.overdue { background: var(--red-pale);    color: var(--red); }
-.due-badge.soon    { background: var(--orange-pale);  color: var(--orange); }
-.due-badge.done    { background: var(--green-pale);   color: var(--green); }
-.due-badge.today   { background: var(--orange-pale);  color: var(--orange); }
-
-.link-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  background: var(--blue-pale);
-  color: var(--blue);
-  text-decoration: none;
-  transition: background .15s;
-}
-.link-badge:hover { background: #dbeafe; }
-
-.enroll-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  border: 1.5px solid var(--gray-300);
-  background: var(--white);
-  color: var(--gray-500);
-  cursor: pointer;
-  transition: all .15s;
-  font-family: inherit;
-}
-.enroll-btn:hover { border-color: #7c3aed; color: #7c3aed; }
-.enroll-btn.on { background: #ede9fe; border-color: #7c3aed; color: #7c3aed; }
-
-/* 모달 날짜 2열 */
-.field-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-/* 카드 액션 버튼 */
-.card-actions {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-.icon-btn {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  transition: background .15s;
-  color: var(--gray-400);
-}
-.icon-btn:hover        { background: var(--gray-100); color: var(--gray-700); }
-.icon-btn.delete:hover { background: var(--red-pale); color: var(--red); }
-
-/* ───── 모달 ───── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15,23,42,.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 500;
-  padding: 20px;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-.modal-box {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  padding: 28px;
-  width: 100%;
-  max-width: 490px;
-  box-shadow: var(--shadow-xl);
-  max-height: 92vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-}
-.modal-header h2 {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--navy);
-  letter-spacing: -0.2px;
-}
-.modal-close {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: var(--gray-100);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gray-500);
-  transition: background .15s;
-  font-family: inherit;
-}
-.modal-close:hover { background: var(--gray-200); }
-
-#eduForm { display: flex; flex-direction: column; gap: 16px; }
-
-.modal-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
+.ig-post-actions {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 12px 0;
+  border-top: 1px solid var(--ig-border);
   margin-top: 6px;
 }
+.ig-act {
+  display: flex; align-items: center; gap: 4px;
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; font-weight: 600;
+  color: var(--ig-gray); padding: 8px;
+  border-radius: 8px; transition: background .15s;
+  flex: 1; justify-content: center;
+  font-family: inherit;
+}
+.ig-act:hover { background: var(--ig-gray-bg); }
+.ig-act.completed { color: var(--ig-red); }
+.ig-act.enrolled-on { color: var(--ig-blue); }
+.ig-act.link-btn { color: var(--ig-black); text-decoration: none; }
+.ig-act.del { color: var(--ig-gray); }
 
-/* ───── 토스트 ───── */
+/* ─── 빈 상태 ──────────────────────────────────────────── */
+.ig-empty {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; padding: 60px 20px;
+  color: var(--ig-gray); text-align: center;
+}
+.ig-empty p { font-size: 15px; }
+
+/* ─── 하단 네비게이션 ───────────────────────────────────── */
+.ig-bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: var(--ig-white);
+  border-top: 1px solid var(--ig-border);
+  display: flex; align-items: center;
+  height: 52px; padding: 0 8px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.ig-nav-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px; background: none; border: none; cursor: pointer;
+  color: var(--ig-gray); padding: 6px 0;
+  font-size: 10px; font-weight: 600; font-family: inherit;
+  transition: color .15s;
+}
+.ig-nav-btn.active { color: var(--ig-black); }
+.ig-nav-btn.add-btn {
+  color: var(--ig-white);
+  background: var(--ig-blue);
+  width: 44px; height: 44px;
+  border-radius: 12px; flex: 0 0 44px; padding: 0;
+}
+.ig-nav-btn span { font-size: 10px; }
+
+/* ─── 모달 ──────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.5);
+  display: flex; align-items: flex-end;
+}
+.modal-box {
+  background: var(--ig-white);
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px 32px;
+  width: 100%; max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.modal-header h2 { font-size: 17px; font-weight: 700; }
+.modal-close {
+  background: var(--ig-gray-bg); border: none; cursor: pointer;
+  width: 30px; height: 30px; border-radius: 50%;
+  font-size: 14px; color: var(--ig-black);
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.modal-actions .btn { flex: 1; }
+
+.field-error {
+  color: var(--ig-red); font-size: 12px; margin-top: 4px;
+}
+
+/* ─── 토스트 ─────────────────────────────────────────────── */
 .toast {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--gray-900);
-  color: var(--white);
-  padding: 12px 24px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 500;
-  z-index: 999;
-  box-shadow: var(--shadow-lg);
-  white-space: nowrap;
-  pointer-events: none;
-  animation: fadeInUp .25s ease;
+  position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,.85); color: #fff;
+  padding: 10px 20px; border-radius: 20px;
+  font-size: 13px; z-index: 300;
+  animation: fadeUp .25s ease;
 }
 .toast.hidden { display: none; }
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+@keyframes fadeUp {
+  from { opacity:0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity:1; transform: translateX(-50%) translateY(0); }
 }
 
-/* ───── 반응형 ───── */
-@media (max-width: 720px) {
-  .stats { grid-template-columns: 1fr 1fr; }
-  .header-inner { padding: 0 14px; }
-  .brand-text { font-size: 15px; }
-  .stat-num { font-size: 28px; }
-  .progress-pct { font-size: 18px; }
-  /* 카드 목록 모바일 최적화 */
-  .card-container { grid-template-columns: 1fr; }
+/* ─── 반응형 ─────────────────────────────────────────────── */
+@media (min-width: 600px) {
+  .ig-login-card { margin: 0 auto; }
+  #cardContainer { max-width: 600px; margin: 0 auto; }
+  .ig-stories { justify-content: center; }
+  .ig-bottom-nav { max-width: 600px; left: 50%; transform: translateX(-50%); }
+  .ig-header { max-width: 600px; margin: 0 auto; left: 0; right: 0; }
 }
 
-@media (max-width: 480px) {
-  /* 로그인 화면 */
-  #loginScreen { padding: 16px; align-items: flex-start; padding-top: 40px; }
-  .login-card { padding: 28px 20px; border-radius: 14px; }
-  .star-badge { width: 56px; height: 56px; font-size: 28px; }
-  .login-hero { margin-bottom: 20px; }
-  .login-hero h1 { font-size: 19px; }
-  /* 버튼 터치 영역 확대 */
-  .btn { min-height: 46px; }
-  .tab { padding: 10px; font-size: 13px; }
-  /* 앱 화면 */
-  .controls { flex-direction: column; align-items: stretch; }
-  .controls .btn { width: 100%; }
-  .user-name { display: none; }
-  main { padding: 16px 14px 60px; gap: 14px; }
-  .edu-card { padding: 14px; gap: 10px; }
-  /* 필터 가로 스크롤 */
-  .filters {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    flex-wrap: nowrap;
-    padding-bottom: 4px;
-  }
-  .filter { flex-shrink: 0; }
-  /* 모달 */
-  .modal-box { padding: 22px 18px; border-radius: 14px; }
-  .modal-overlay { align-items: flex-end; }
-  .modal-box { border-radius: 18px 18px 0 0; max-height: 92vh; overflow-y: auto; }
-  /* 통계 */
-  .stat-num { font-size: 24px; }
-  .stat-lbl { font-size: 10px; }
-}
-
-@media (max-width: 360px) {
-  .stats { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .filter { padding: 6px 10px; font-size: 12px; }
+@media (max-width: 380px) {
+  .ig-login-card { padding: 32px 20px 20px; }
+  .story-ring { width: 56px; height: 56px; }
+  .story-label { font-size: 10px; }
 }
