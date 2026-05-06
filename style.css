@@ -192,6 +192,10 @@ body {
   width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
   border: 1.5px solid var(--ig-border);
 }
+.ig-user-name {
+  font-size: 13px; font-weight: 600; color: var(--ig-black);
+  max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .ig-icon-btn {
   background: none; border: none; cursor: pointer;
   color: var(--ig-black); padding: 4px;

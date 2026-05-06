@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>군 교육 이수 관리 시스템</title>
-  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="stylesheet" href="style.css?v=14">
   <!-- Firebase SDK (compat v10) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -79,6 +79,7 @@
     <header class="ig-header">
       <span class="ig-logo">필수교육완료</span>
       <div class="ig-header-right">
+        <span id="userName" class="ig-user-name"></span>
         <img id="userPhoto" class="ig-avatar-sm" src="" alt="프로필">
         <button class="ig-icon-btn" onclick="doSignOut()" title="로그아웃">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -128,7 +129,7 @@
 
       <!-- 진행률 바 -->
       <div class="ig-progress-wrap">
-        <div class="ig-progress-bar">
+        <div class="ig-progress-bar" id="progressBar">
           <div class="ig-progress-fill" id="progressFill"></div>
         </div>
         <span class="ig-progress-pct" id="progressPct">0%</span>
@@ -217,6 +218,6 @@
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
   <script src="firebase.js?v=12"></script>
-  <script src="app.js?v=13"></script>
+  <script src="app.js?v=14"></script>
 </body>
 </html>
