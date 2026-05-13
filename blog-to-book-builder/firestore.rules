@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+
+    match /projects/{projectId} {
+      allow read, write: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId;
+      allow create: if isAuthenticated() &&
+        request.auth.uid == request.resource.data.userId;
+    }
+
+    match /projects/{projectId}/posts/{postId} {
+      allow read, write: if isAuthenticated() &&
+        get(/databases/$(database)/documents/projects/$(projectId)).data.userId == request.auth.uid;
+    }
+
+    match /projects/{projectId}/chapters/{chapterId} {
+      allow read, write: if isAuthenticated() &&
+        get(/databases/$(database)/documents/projects/$(projectId)).data.userId == request.auth.uid;
+    }
+
+    match /exports/{exportId} {
+      allow read, write: if isAuthenticated() &&
+        request.auth.uid == resource.data.userId;
+      allow create: if isAuthenticated() &&
+        request.auth.uid == request.resource.data.userId;
+    }
+  }
+}
